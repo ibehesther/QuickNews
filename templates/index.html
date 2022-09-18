@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickNews</title>
+    <link type="text/css" rel="stylesheet" href="/static/styles.css" >
+</head>
+<body>
+    <h1>QuickNews</h1>
+    <h2>Discover news from all over the world!</h2>
+
+    <form action="">
+        <input type="text" name="search" id="search" placeholder="Search">
+        <input type="submit" value="&#128269;" id="search-btn">
+    </form>
+
+    <div class="tabs">
+        <button class="tablink active">All</button>
+        <button class="tablink">Story</button>
+        <button class="tablink">Job</button>
+    </div>
+    {% if stories %}
+        {% for story in stories %}
+        <ol>
+            {% for detail in story %}
+                <li>{{detail}}: {{story[detail]}} </li>
+            {% endfor %}
+        </ol>
+        {% endfor %}
+    {% endif %}
+</body>
+</html>
