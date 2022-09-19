@@ -5,30 +5,41 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QuickNews</title>
-    <link type="text/css" rel="stylesheet" href="/static/styles.css" >
+    <link type="text/css" rel="stylesheet" href="/static/css/styles.css" >
 </head>
 <body>
-    <h1>QuickNews</h1>
-    <h2>Discover news from all over the world!</h2>
+    <main>
+        <h1>QuickNews</h1>
+        <h2>Discover news from all over the world!</h2>
 
-    <form action="">
-        <input type="text" name="search" id="search" placeholder="Search">
-        <input type="submit" value="&#128269;" id="search-btn">
-    </form>
+        <form action="" id="search">
+            <input type="text" name="search_term" id="search-term" placeholder="Search">
+            <input type="submit" value="&#128269;" id="search-btn">
+        </form>
 
-    <div class="tabs">
-        <button class="tablink active">All</button>
-        <button class="tablink">Story</button>
-        <button class="tablink">Job</button>
-    </div>
-    {% if stories %}
-        {% for story in stories %}
-        <ol>
-            {% for detail in story %}
-                <li>{{detail}}: {{story[detail]}} </li>
-            {% endfor %}
-        </ol>
-        {% endfor %}
-    {% endif %}
+        <div class="tabs">
+            <button class="tablink active" id="all-btn">All</button>
+            <button class="tablink" id="story-btn" >Story</button>
+            <button class="tablink" id="job-btn">Job</button>
+        </div>
+        <section class="news-container">
+            {% if stories %}
+                {% for story in stories %}
+                    <div class="news-card">
+                        <img src="/static/images/news.jpg" alt="news" srcset="">
+                        <div class="news-details">
+                            <p class="news-title">{{story["title"]}}</p>
+                            <div class="news-subdetails">
+                                <p class="news-time">&#128337; {{story["time"]}}</p>
+                                <p class="news-author">author: {{story["author"]}}</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </section>
+    </main>
+    
+    <script src="/static/js/script.js"></script>
 </body>
 </html>

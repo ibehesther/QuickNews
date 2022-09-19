@@ -12,12 +12,13 @@ def setup_db(app):
 class News(db.Model):
     __tablename__ = "news"
     id = db.Column(db.Integer, primary_key = True)
-    type = db.Column(db.String(20), nullable=False)
-    source = db.Column(db.String(20), nullable=False)
-    time = db.Column(db.Integer, nullable=True)
-    title = db.Column(db.String(120), nullable=True)
-    url = db.Column(db.String(120), nullable=True)
-    comments = db.Column(db.ARRAY(db.Integer), nullable=True)
+    type = db.Column(db.String(50), nullable=False)
+    author = db.Column(db.String(), nullable=False)
+    source = db.Column(db.String(50), nullable=False)
+    time = db.Column(db.Integer, nullable=False)
+    title = db.Column(db.String(), nullable=False)
+    url = db.Column(db.String(), nullable=False)
+    comments = db.Column(db.ARRAY(db.Integer), nullable=False)
 
 
     def __repr__(self):
