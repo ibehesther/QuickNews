@@ -3,6 +3,7 @@ const story_button = document.querySelector("#story-btn");
 const job_button = document.querySelector("#job-btn");
 const tabs = document.querySelectorAll(".tabs>button");
 const news_section = document.querySelector(".news-container");
+const search_section = document.querySelector(".search-container");
 const search_form = document.querySelector("#search");
 const search_term = document.querySelector("#search-term");
 
@@ -34,6 +35,14 @@ const getNewsbySearch = async(search_term) => {
     response = await response.json()
     return response
 }
+const getMostRecentNews = async(lastNewsKey) => {
+    let newstories_response = await fetch(`${BASE_API_URL}/api/v1.0/news/most_recent?last_news_key=${lastNewsKey}`,
+    {
+        method: "POST"
+    })
+    newstories_response = await newstories_response.json();
+    return newstories_response
+}
 
 const createNewsItem = (title, time, author) => {
     const news_container = document.createElement("div");
@@ -60,7 +69,7 @@ const createNewsItem = (title, time, author) => {
     // create element for news author
     const news_author = document.createElement("p");
     news_author.className="news-author";
-    news_author.innerText=author;
+    news_author.innerText="author: "+author;
 
     // Combine the elements together for correct formation
     news_subdetails.appendChild(news_time);
@@ -89,8 +98,19 @@ const getAllNewsItems = (response) => {
 window.onload = () => {
     console.log("DOM content loading...")
     // Adding recent news to database using Hacker News API
+    
     setInterval(() => {
         console.log("Fetching recent news...")
+        getAllNews()
+        .then(({response}) => {
+            const lastNewsKey = response[0]["key"]
+            const mostRecentNews = getMostRecentNews(lastNewsKey)
+            mostRecentNews.then((response) => {
+                console.log(lastNewsKey, response)
+            })
+            
+        })
+    .catch(console.log)
     }, 300000);
 }
 const makeActive = (e) => {
@@ -133,8 +153,25 @@ job_button.addEventListener("click", (e) => {
     .catch(console.log)
 })
 search_form.addEventListener("submit", (e) => {
-    e.preventDefault()
-    getNewsbySearch(search_term.value)
-    .then(console.log)
-    .catch(console.log)
+    e.preventDefault();
+    
+    if(search_term.value.trim()){
+        search_section.innerText = "Loading...";
+        search_section.style.color="black";
+        getNewsbySearch(search_term.value)
+        .then(({response}) => {
+            if(response.length){
+                const news = getAllNewsItems(response);
+                search_section.innerHTML= news.innerHTML;
+                search_section.style.color="black";
+            }else{
+                search_section.innerText= "Nothing found! Try a different search";
+                search_section.style.color="red";
+            }
+        })
+        .catch(console.log)
+    }
+})
+search_term.addEventListener('keydown', (e) => {
+    search_section.innerHTML=""
 })

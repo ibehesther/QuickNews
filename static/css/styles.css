@@ -11,10 +11,22 @@ main{
     overflow-wrap: break-word;
 
 }
+h1{
+    padding: .5em 0;
+}
+h2{
+    font-size: 1.3em;
+}
+#search{
+    padding: .5em 0;
+}
 #search-term {
     font-size: 1.2em;
     padding: .2em .5em;
     border-radius: 5px 0 0 5px;
+}
+#search_term:active {
+    outline: 0;
 }
 #search-btn {
     font-size: 1em;
@@ -25,6 +37,7 @@ main{
 .tabs{
     background-color: white;
     display: flex;
+    margin-bottom: .5em;
 }
 .tablink{
     font-size: 1.4em;
@@ -39,7 +52,7 @@ main{
     color: black;
     font-weight: 800;
 }
-.news-container{
+.news-container, .search-container{
     padding-right: 2em;
 }
 .news-card{

@@ -6,9 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QuickNews</title>
     <link type="text/css" rel="stylesheet" href="/static/css/styles.css" >
+    <script src="https://unpkg.com/htmx.org@1.6.1"></script>
+    <script src="https://unpkg.com/htmx.org@1.6.1/dist/ext/client-side-templates.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/nunjucks/3.0.1/nunjucks.min.js"
+   integrity="sha512-IIuR+Zp8wvP0dxNcSsRPoL7SXzP1kGmosDtcU7f6cPObZ9F5Ze/icFSRH/SqigP468jGwDm2XOE0/gSGm/cTBw=="
+   crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body>
-    <main>
+    <main hx-ext="client-side-templates">
         <h1>QuickNews</h1>
         <h2>Discover news from all over the world!</h2>
 
@@ -16,30 +21,76 @@
             <input type="text" name="search_term" id="search-term" placeholder="Search">
             <input type="submit" value="&#128269;" id="search-btn">
         </form>
+        <section class="search-container">
 
-        <div class="tabs">
-            <button class="tablink active" id="all-btn">All</button>
-            <button class="tablink" id="story-btn" >Story</button>
-            <button class="tablink" id="job-btn">Job</button>
+        </section>
+
+        <div class="tabs" >
+            <button class="tablink active" id="all-btn"
+                type="button"
+                hx-trigger="load, click"
+                hx-swap="innerHTML"
+                hx-get="/api/v1.0/news?page=1"
+                hx-target="#news-container"
+                
+                >
+                All
+            </button>
+            <button class="tablink" id="story-btn" 
+                type="button"
+                hx-trigger="click"
+                hx-swap="innerHTML"
+                hx-get="/api/v1.0/news/story?page=1"
+                hx-target="#news-container"
+                
+                >
+                Story
+            </button>
+            <button class="tablink" id="job-btn"
+                type="button"
+                hx-trigger="click"
+                hx-swap="innerHTML"
+                hx-get="/api/v1.0/news/job?page=1"
+                hx-target="#news-container"
+                
+                >
+                Job
+            </button>
         </div>
-        <section class="news-container">
-            {% if stories %}
-                {% for story in stories %}
+
+        <!-- <script id="news-template" type="nunjucks">
+            {% if items %}
+                {% for item in items %}
                     <div class="news-card">
                         <img src="/static/images/news.jpg" alt="news" srcset="">
                         <div class="news-details">
-                            <p class="news-title">{{story["title"]}}</p>
+                            <p class="news-title">{{item.title}}</p>
                             <div class="news-subdetails">
-                                <p class="news-time">&#128337; {{story["time"]}}</p>
-                                <p class="news-author">author: {{story["author"]}}</p>
+                                <p class="news-time">&#128337; {{item.time}}</p>
+                                <p class="news-author">author: {{item.author}}</p>
                             </div>
                         </div>
                     </div>
                 {% endfor %}
             {% endif %}
+        </script> -->
+
+        <section class="news-container" id="news-container">
+            {% for item in items %}
+                <div class="news-card">
+                    <img src="/static/images/news.jpg" alt="news" srcset="">
+                    <div class="news-details">
+                        <p class="news-title">{{item.title}}</p>
+                        <div class="news-subdetails">
+                            <p class="news-time">&#128337; {{item.time}}</p>
+                            <p class="news-author">author: {{item.author}}</p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
         </section>
     </main>
     
-    <script src="/static/js/script.js"></script>
+    <!-- <script src="/static/js/script.js"></script> -->
 </body>
 </html>

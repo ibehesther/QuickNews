@@ -11,16 +11,28 @@ BASE_URL = "https://hacker-news.firebaseio.com/v0"
 
 
 
-def getFirst100RecentNews():
-    top100RecentNews= []
-    newstories_url = BASE_URL+'/topstories.json?orderBy="$priority"&limitToFirst=100'
+def getRecentNews(number):
+    topRecentNews= []
+    newstories_url = BASE_URL+'/newstories.json?orderBy="$priority"&limitToFirst='+str(number)
     newstories_response = requests.get(url=newstories_url).json()
     for item in newstories_response:
         url = BASE_URL+"/item/"+str(item)+"/.json"
         response = requests.get(url=url).json()
-        top100RecentNews.append(response)
-    return top100RecentNews
+        topRecentNews.append(response)
+    return topRecentNews
 
+def getMostRecentNews(lastNewsKey):
+    mostRecentNews= []
+    newstories_url = BASE_URL+'/newstories.json'
+    newstories_response = requests.get(url=newstories_url).json()
+    for item in newstories_response:
+        if(item > int(lastNewsKey)):
+            url = BASE_URL+"/item/"+str(item)+"/.json"
+            response = requests.get(url=url).json()
+            mostRecentNews.append(response)
+        else:
+            break
+    return mostRecentNews
 # Get all news
 @app.route("/api/v1.0/news")
 def getNews():
@@ -29,12 +41,12 @@ def getNews():
     NEWS_PER_PAGE = 10
     start = (int(page) - 1) * NEWS_PER_PAGE
     end = start + NEWS_PER_PAGE
-    
     try:
         news = News.query.order_by(db.desc(News.time)).all()
         for item in news:
             news_details = {
                 "id": item.id,
+                "key": item.key,
                 "type": item.type,
                 "author": item.author,
                 "source": item.source,
@@ -47,7 +59,56 @@ def getNews():
         body = body[start: end]
     except Exception:
         abort(404)
-    return jsonify({"response": body})
+    return jsonify({"items": body})
+
+# Add most recent news based on last index in database
+@app.route("/api/v1.0/news/most_recent", methods=["POST"])
+def addMostRecentNews():
+    all_news=[]
+    lastNewsId= request.args["last_news_key"]
+    response = getMostRecentNews(lastNewsId)
+    for item in response:
+        type = item["type"]
+        key=item["id"]
+        # set default value for optional field in Hacker News API
+        author = item.setdefault("by", "Anon")
+        title = item.setdefault("title", "No title")
+        time = item.setdefault("time", 0)
+        url= item.setdefault('url', "https://google.com")
+        comments = item.setdefault("kids", [])
+        news = {
+            "key": key,
+            "type": type,
+            "author": author,
+            "title": title,
+            "source": "HN_API",
+            "time": time,
+            "url": url,
+            "comments": comments
+        }
+        all_news.append(news)
+    
+    # Add news to database
+    for news in all_news:
+        key = news["key"]
+        type = news["type"]
+        author = news["author"]
+        source = news["source"]
+        title = news["title"]
+        time = news["time"]
+        url= news["url"]
+        comments = news["comments"]
+        try:
+            new_news = News(key=key, type=type, source=source, time=time, 
+                        author=author, title=title, url=url, comments=comments)
+            db.session.add(new_news)
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+            abort(400)
+        finally:
+            db.session.close()
+    return jsonify(all_news)
 
 # Filter news by on type
 @app.route("/api/v1.0/news/<string:news_type>")
@@ -75,7 +136,7 @@ def getNewsByType(news_type):
         body = body[start: end]
     except Exception:
         abort(404)
-    return jsonify({"response": body})
+    return jsonify({"items": body})
 
 # Filter news by search term
 @app.route("/api/v1.0/news/search", methods=["POST"])
@@ -133,14 +194,18 @@ def add_news():
         db.session.close()
     return jsonify({"response": body})
 
-# Route to populate database with first 100 news from Hacker News API
+# Route to populate database from Hacker News API
 @app.route("/api/v1.0/hn_news", methods=["POST"])
 def add_hn_news():
     all_news = []
-    first100News = getFirst100RecentNews()
+    # first 100 News from Hacker News API
+    first100News = getRecentNews(100)
+
+    # recentNews = get
     # Get news details needed 
     for item in first100News:
         type = item["type"]
+        key=item["id"]
         # set default value for optional field in Hacker News API
         author = item.setdefault("by", "Anon")
         title = item.setdefault("title", "No title")
@@ -148,6 +213,7 @@ def add_hn_news():
         url= item.setdefault('url', "https://google.com")
         comments = item.setdefault("kids", [])
         news = {
+            "key": key,
             "type": type,
             "author": author,
             "title": title,
@@ -160,6 +226,7 @@ def add_hn_news():
     
     # Add news to database
     for news in all_news:
+        key = news["key"]
         type = news["type"]
         author = news["author"]
         source = news["source"]
@@ -168,7 +235,7 @@ def add_hn_news():
         url= news["url"]
         comments = news["comments"]
         try:
-            new_news = News(type=type, source=source, time=time, 
+            new_news = News(key=key, type=type, source=source, time=time, 
                         author=author, title=title, url=url, comments=comments)
             db.session.add(new_news)
             db.session.commit()
@@ -179,11 +246,14 @@ def add_hn_news():
             db.session.close()
     return jsonify(all_news)
 
+
 @app.route('/')
 def index():
-    url = "http://127.0.0.1:8000/api/v1.0/news?page=1"
-    news = requests.get(url=url).json()
-    return render_template("index.html", stories=news["response"])
+    # url = "http://127.0.0.1:8000/api/v1.0/news/job?page=1"
+    # news = requests.get(url=url).json()
+    return render_template("index.html"
+    # , stories=news
+    )
 
 # Error handlers
 @app.errorhandler(400)

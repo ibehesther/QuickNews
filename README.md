@@ -21,3 +21,6 @@ Bonus
 - Only display top-level items in the list, and display their children (comments, for example) on a detail page;
 - In the API, allow updating and deleting items if they were created in the API (but never data that was retrieved from Hacker News);
 - Be creative! :)
+
+
+pip install -r requirements.txt

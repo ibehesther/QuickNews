@@ -12,6 +12,7 @@ def setup_db(app):
 class News(db.Model):
     __tablename__ = "news"
     id = db.Column(db.Integer, primary_key = True)
+    key = db.Column(db.Integer, nullable=True)
     type = db.Column(db.String(50), nullable=False)
     author = db.Column(db.String(), nullable=False)
     source = db.Column(db.String(50), nullable=False)
