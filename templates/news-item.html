@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickNews</title>
+    <link type="text/css" rel="stylesheet" href="/static/css/styles.css" >
+    <script src="https://unpkg.com/htmx.org@1.6.1"></script>
+    <script src="https://unpkg.com/htmx.org@1.6.1/dist/ext/client-side-templates.js"></script>
+    <script src="https://unpkg.com/htmx.org/dist/ext/class-tools.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/nunjucks/3.0.1/nunjucks.min.js"
+   integrity="sha512-IIuR+Zp8wvP0dxNcSsRPoL7SXzP1kGmosDtcU7f6cPObZ9F5Ze/icFSRH/SqigP468jGwDm2XOE0/gSGm/cTBw=="
+   crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+    <main hx-ext="client-side-templates">
+        <h1><a href="/">QuickNews</a></h1>
+        <h2>News Details</h2>
+        <div id="news-details-container">
+            <img src="/static/images/news.jpg" alt="news" srcset="">
+            <h4>{{item.title}}</h4>
+            <a href="{{item.url}}" target="_blank">Click here to read more</a>
+            <p>written by: {{item.author}}</p>
+            <p>type: {{item.type}}</p>
+            <p>Comments:</p>
+            <ul>
+                {% if item.comments %}
+                    {%for comment in item.comments %}
+                        <li>{{comment.text}}</li>
+                    {% endfor %}
+                {% else %}
+                    <li>No comment(s)</li>
+                {% endif %}
+            </ul>
+            
+        </div>
+    </main>
+    <script src="/static/js/script.js"></script>
+</body>
+</html>

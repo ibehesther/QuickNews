@@ -22,5 +22,21 @@ Bonus
 - In the API, allow updating and deleting items if they were created in the API (but never data that was retrieved from Hacker News);
 - Be creative! :)
 
+### To get project started
+- Create virtual environment
+    - For windows/Linux/Mac:
+        `py -3 -m venv name_of_your_venv`
+- Activate virtual environment
+    - For windows:
+        `name_of_venv\Scripts\activate`
+    - For Linux/Mac:
+        ```
+        source
+        name_of_venv/bin/activate
+        ```
+- Install all the required packages
+   ` pip install -r requirements.txt `
+- Start the server
+    ` py app.py `
 
-pip install -r requirements.txt
+Application should be up and running on `http:127.0.0.1:8000`

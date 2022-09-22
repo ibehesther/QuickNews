@@ -1,0 +1,19 @@
+
+     {% if items %}
+        {% for item in items %}
+            <a href="/news/{{item.id}}">
+                <div class="news-card" >
+                    <img src="/static/images/news.jpg" alt="news" srcset="">
+                    <div class="news-details">
+                        <p class="news-title">{{item.title}}</p>
+                        <div class="news-subdetails">
+                            <p class="news-time"></p>
+                            <p class="news-author">author: {{item.author}}</p>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        {% endfor %}
+     {% else %}
+            <p>Nothing found</p>
+    {% endif %}

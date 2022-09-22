@@ -13,15 +13,26 @@ class News(db.Model):
     __tablename__ = "news"
     id = db.Column(db.Integer, primary_key = True)
     key = db.Column(db.Integer, nullable=True)
-    type = db.Column(db.String(50), nullable=False)
+    type = db.Column(db.String(), nullable=False)
     author = db.Column(db.String(), nullable=False)
-    source = db.Column(db.String(50), nullable=False)
+    source = db.Column(db.String(), nullable=False)
     time = db.Column(db.Integer, nullable=False)
     title = db.Column(db.String(), nullable=False)
     url = db.Column(db.String(), nullable=False)
-    comments = db.Column(db.ARRAY(db.Integer), nullable=False)
-
+    comments = db.relationship("Comments", backref="news")
 
     def __repr__(self):
         return f'<News: id- {self.id} type- {self.type} title- {self.title} >'
+
+class Comments(db.Model):
+    __tablename__ = "comments"
+    id = db.Column(db.Integer, primary_key = True)
+    key = db.Column(db.Integer, nullable=True)
+    time = db.Column(db.Integer, nullable=False)
+    text= db.Column(db.String(), nullable=True)
+    news_id = db.Column(db.Integer, db.ForeignKey("news.id"))
+
+
+    def __repr__(self):
+        return f'<Comments: id- {self.id} news_id- {self.news_id} text- {self.text} >'
 
